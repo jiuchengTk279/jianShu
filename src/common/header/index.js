@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import  { actionCreators }  from './store'
 import { HeaderWrapper, Logo, Nav, NavItem, NavSearch, Addition, Button, SearchWrapper, SearchInfo, SearchInfoTitle, SearchInfoSwitch, SearchInfoItem, SearchInfoList} from './style'
 import { GlobalStyled } from '../../statics/iconfont/iconfont.js'
-
+import { actionCreators as loginActionCreators } from '../../pages/login/store'
 
 class Header extends Component {
 
@@ -54,37 +54,41 @@ class Header extends Component {
 
     render() {
         
-        const {focused, handleInputFocus, handleInputBlur, list } = this.props
+        const {focused, handleInputFocus, handleInputBlur, list, login, logout } = this.props
 
         return (
             <HeaderWrapper>
-            <GlobalStyled></GlobalStyled>
-            <Link to='/'>
-                <Logo />
-            </Link>
-            <Nav>
-                <NavItem className="left active">首页</NavItem>
-                <NavItem className="left">下载App</NavItem>
-                <NavItem className="right">登录</NavItem>
-                <NavItem className="right">
-                    <i className="iconfont">&#xe636;</i>
-                </NavItem>
-                <SearchWrapper>
-                    <CSSTransition in={focused} timeout={200} classNames="slide">
-                        <NavSearch className={focused ? 'focused' : ''}  onFocus={() => handleInputFocus(list)} onBlur={handleInputBlur}></NavSearch>
-                    </CSSTransition>
-                    <i className={focused ? 'focused iconfont zoom' : 'iconfont zoom'}>&#xe614;</i>
-                    { this.getListArea()}
-                </SearchWrapper>
-            </Nav>
-            <Addition>
-                <Button className="writting">
-                    <i className="iconfont">&#xe615;</i>
-                    写文章
-                </Button>
-                <Button className="reg">注册</Button>
-            </Addition>
-        </HeaderWrapper>
+                <GlobalStyled></GlobalStyled>
+                {/* <Link to='/home'> */}
+					<Logo />
+				{/* </Link> */}
+                <Nav>
+                    <NavItem className="left active">首页</NavItem>
+                    <NavItem className="left">下载App</NavItem>
+                    {
+                        login ? <NavItem className="right" onClick={logout}>退出</NavItem> : <Link to='/login'><NavItem className="right">登录</NavItem></Link>
+                    }
+                    <NavItem className="right">
+                        <i className="iconfont">&#xe636;</i>
+                    </NavItem>
+                    <SearchWrapper>
+                        <CSSTransition in={focused} timeout={200} classNames="slide">
+                            <NavSearch className={focused ? 'focused' : ''}  onFocus={() => handleInputFocus(list)} onBlur={handleInputBlur}></NavSearch>
+                        </CSSTransition>
+                        <i className={focused ? 'focused iconfont zoom' : 'iconfont zoom'}>&#xe614;</i>
+                        { this.getListArea()}
+                    </SearchWrapper>
+                </Nav>
+                <Addition>
+                    <Link to='/write'>
+                        <Button className="writting">
+                            <i className="iconfont">&#xe615;</i>
+                            写文章
+                        </Button>
+                    </Link>
+                    <Button className="reg">注册</Button>
+                </Addition>
+            </HeaderWrapper>
         )
     }
 }
@@ -155,7 +159,8 @@ const mapStateToProps = (state) => {
         list: state.getIn(['header', 'list']),
         page: state.getIn(['header', 'page']),
         totalPage: state.getIn(['header', 'totalPage']),
-        mouseIn: state.getIn(['header', 'mouseIn'])
+        mouseIn: state.getIn(['header', 'mouseIn']),
+        login: state.getIn(['login', 'login'])
     }
 }
 
@@ -196,6 +201,9 @@ const mapDispatchToProps = (dispatch) => {
             } else {
                 dispatch(actionCreators.changePage(1))
             }
+        },
+        logout () {
+            dispatch(loginActionCreators.logout())
         }
     }
 }
